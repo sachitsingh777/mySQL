@@ -1,0 +1,79 @@
+mysql> USE set3;
+Database changed
+mysql> SELECT * FROM rides;
++----+-----------+--------------+----------------+-----------------+----------+-----------+--------+
+| id | driver_id | passenger_id | start_location | end_location    | distance | ride_time | fare   |
++----+-----------+--------------+----------------+-----------------+----------+-----------+--------+
+|  1 |         1 |            2 | San Francisco  | Oakland         |    10.00 |     30.00 |  20.00 |
+|  3 |         3 |            4 | New York       | New Jersey      |    30.00 |     90.00 |  60.00 |
+|  4 |         4 |            5 | Chicago        | Milwaukee       |    40.00 |    120.00 | 120.00 |
+|  5 |         5 |            1 | Miami          | Fort Lauderdale |    50.00 |    150.00 | 100.00 |
++----+-----------+--------------+----------------+-----------------+----------+-----------+--------+
+4 rows in set (0.01 sec)
+
+mysql> SELECT id, fare FROM Rides ORDER BY fare LIMIT 1; SELECT id, fare FROM Rides ORDER BY fare DESC LIMIT 1;
++----+-------+
+| id | fare  |
++----+-------+
+|  1 | 20.00 |
++----+-------+
+1 row in set (0.01 sec)
+
++----+--------+
+| id | fare   |
++----+--------+
+|  4 | 120.00 |
++----+--------+
+1 row in set (0.00 sec)
+
+mysql> SELECT driver_id, AVG(fare) AS average_fare, AVG(distance) AS average_distance FROM Rides GROUP BY driver_id;
++-----------+--------------+------------------+
+| driver_id | average_fare | average_distance |
++-----------+--------------+------------------+
+|         1 |    20.000000 |        10.000000 |
+|         3 |    60.000000 |        30.000000 |
+|         4 |   120.000000 |        40.000000 |
+|         5 |   100.000000 |        50.000000 |
++-----------+--------------+------------------+
+4 rows in set (0.01 sec)
+
+mysql> SELECT driver_id FROM Rides GROUP BY driver_id HAVING COUNT(*) > 5;
+Empty set (0.01 sec)
+
+mysql> SELECT Drivers.name, Rides.fare FROM Drivers INNER JOIN Rides ON Drivers.driver_id = Rides.driver_id ORDER BY fare DESC LIMIT 1;
+ERROR 1146 (42S02): Table 'set3.drivers' doesn't exist
+mysql> WITH top_3_earning_drivers AS (    SELECT driver_id, SUM(fare) AS total_fare    FROM Rides    GROUP BY driver_id    ORDER BY total_fare DESC    LIMIT 3) SELECT driver_id, total_fare FROM top_3_earning_drivers;
++-----------+------------+
+| driver_id | total_fare |
++-----------+------------+
+|         4 |     120.00 |
+|         5 |     100.00 |
+|         3 |      60.00 |
++-----------+------------+
+3 rows in set (0.01 sec)
+
+mysql> SELECT * FROM Rides WHERE ride_date > CURRENT_DATE - INTERVAL 7 DAY;
+ERROR 1054 (42S22): Unknown column 'ride_date' in 'where clause'
+mysql> SELECT * FROM Rides WHERE end_location IS NULL;
+Empty set (0.00 sec)
+
+mysql> SELECT id, fare / distance AS fare_per_mile FROM Rides ORDER BY fare_per_mile DESC;
++----+---------------+
+| id | fare_per_mile |
++----+---------------+
+|  4 |      3.000000 |
+|  1 |      2.000000 |
+|  3 |      2.000000 |
+|  5 |      2.000000 |
++----+---------------+
+4 rows in set (0.00 sec)
+
+mysql> WITH rides_with_passengers AS (    SELECT Rides.id, Rides.driver_id, Rides.passenger_id, Drivers.name AS driver_name, Passengers.name AS passenger_name    FROM Rides    INNER JOIN Drivers ON Drivers.driver_id = Rides.driver_id    INNER JOIN Passengers ON Passengers.passenger_id = Rides.passenger_id) SELECT * FROM rides_with_passengers;
+ERROR 1146 (42S02): Table 'set3.drivers' doesn't exist
+mysql> WITH rides_with_passengers AS (    SELECT Rides.id, Rides.driver_id, Rides.passenger_id, Drivers.name AS driver_name, Passengers.name AS passenger_name    FROM Rides    INNER JOIN Drivers ON Drivers.driver_id = Rides.driver_id    INNER JOIN Passengers ON Passengers.passenger_id = Rides.passenger_id) SELECT * FROM rides_with_passengers;
+ERROR 1146 (42S02): Table 'set3.drivers' doesn't exist
+mysql> ALTER TABLE Rides ADD COLUMN tip DECIMAL(6,2);
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql>

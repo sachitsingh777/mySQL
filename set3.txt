@@ -1,0 +1,70 @@
+mysql> CREATE DATABASE set3;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> USE set3;
+Database changed
+mysql> CREATE TABLE Rides (    id INT PRIMARY KEY,    driver_id INT,    passenger_id INT,    start_location VARCHAR(255),    end_location VARCHAR(255),    distance DECIMAL(5,2),    ride_time DECIMAL(5,2),    fare DECIMAL(6,2));
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> INSERT INTO Rides (id, driver_id, passenger_id, start_location, end_location, distance, ride_time, fare)VALUES(1, 1, 2, 'San Francisco', 'Oakland', 10, 30, 20),(2, 2, 3, 'Los Angeles', 'Santa Monica', 20, 60, 40),(3, 3, 4, 'New York', 'New Jersey', 30, 90, 60),(4, 4, 5, 'Chicago', 'Milwaukee', 40, 120, 80),(5, 5, 1, 'Miami', 'Fort Lauderdale', 50, 150, 100);
+Query OK, 5 rows affected (0.02 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> SELECT *FROM Rides ORDER BY fare DESC;
++----+-----------+--------------+----------------+-----------------+----------+-----------+--------+
+| id | driver_id | passenger_id | start_location | end_location    | distance | ride_time | fare   |
++----+-----------+--------------+----------------+-----------------+----------+-----------+--------+
+|  5 |         5 |            1 | Miami          | Fort Lauderdale |    50.00 |    150.00 | 100.00 |
+|  4 |         4 |            5 | Chicago        | Milwaukee       |    40.00 |    120.00 |  80.00 |
+|  3 |         3 |            4 | New York       | New Jersey      |    30.00 |     90.00 |  60.00 |
+|  2 |         2 |            3 | Los Angeles    | Santa Monica    |    20.00 |     60.00 |  40.00 |
+|  1 |         1 |            2 | San Francisco  | Oakland         |    10.00 |     30.00 |  20.00 |
++----+-----------+--------------+----------------+-----------------+----------+-----------+--------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT SUM(distance), SUM(fare) FROM Rides;
++---------------+-----------+
+| SUM(distance) | SUM(fare) |
++---------------+-----------+
+|        150.00 |    300.00 |
++---------------+-----------+
+1 row in set (0.00 sec)
+
+mysql> SELECT AVG(ride_time) AS average_ride_time FROM Rides;
++-------------------+
+| average_ride_time |
++-------------------+
+|         90.000000 |
++-------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT *FROM Rides WHERE start_location LIKE '%Downtown%' OR end_location LIKE '%Downtown%';
+Empty set (0.00 sec)
+
+mysql> SELECT COUNT(*) AS number_of_rides FROM Rides WHERE driver_id = 1;
++-----------------+
+| number_of_rides |
++-----------------+
+|               1 |
++-----------------+
+1 row in set (0.00 sec)
+mysql> UPDATE Rides SET fare = 120 WHERE id = 4;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT driver_id, SUM(fare) AS total_fare FROM Rides GROUP BY driver_id;
++-----------+------------+
+| driver_id | total_fare |
++-----------+------------+
+|         1 |      20.00 |
+|         2 |      40.00 |
+|         3 |      60.00 |
+|         4 |     120.00 |
+|         5 |     100.00 |
++-----------+------------+
+5 rows in set (0.02 sec)
+
+mysql> DELETE FROM Rides WHERE id = 2;
+Query OK, 1 row affected (0.01 sec)
+
+mysql>
